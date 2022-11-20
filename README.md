@@ -19,3 +19,4 @@ For each token there are rules:
 
 Finite Automata is a simplemachine to recognize patterns. It consists of Finite set of states, set of input symbols, initial state, set of final states, transistion function.
 
+>
