@@ -12,9 +12,11 @@ class Error:
         result  = f'{self.error_name}: {self.details}\n'
         return result
 
-class Incorrect(Error):
+class Incorrect(Error): 
     def __init__(self, details):
         super().__init__( 'Incorrect Character', details)
+
+
 
 #Token Types 
 TokenType_Int		= 'Int'
@@ -32,6 +34,8 @@ TokenType_LessEqual   = 'LessEqual'
 TokenType_GreatEqual    = 'GreatEqual'
 TokenType_Equal     = 'Equal'
 TokenType_NotEqual   = 'NotEqual'
+
+
 
 #type is the token type and value is the value under the type identified 
 class Token:
@@ -116,6 +120,7 @@ class Lexical:
         num_str = ''
         decimal = 0
 
+        
 
 #checking if number is float or int only if the current character is not a none and the current character has the digits from above which is 0-9
         while self.current_char != None and self.current_char in digi + '.':
@@ -132,9 +137,80 @@ class Lexical:
         else:
             return Token(TokenType_Float, float(num_str))
 
+#making a node class that takes in an integer or a float token 
+class Node: 
+    def __init__(self, tok):
+        self.tok = tok
+
+    def __repr__(self):
+        return f'{self.tok}'
+# class for the binary operation showing the left and right node and the operator in betweeen(+,-,*,/)      
+class BinaryOp:
+    def __init__(self, left_node,operator, right_node):
+        self.left_node = left_node
+        self.operator = operator
+        self.right_node = right_node
+
+    def __repr__(self):
+        return f'({self.left_node}, {self.operator}, {self.right_node})'
+#the parser takes the first token in the expression and advance through the whole expression
+class Parser:
+    def __init__(self,tokens):
+        self.tokens = tokens
+        self.token_index = -1
+        self.advance()
+#advance function allows to move onto the next token in the expression     
+    def advance(self):
+        self.token_index += 1
+        if self.token_index < len(self.tokens):
+            self.present_token = self.tokens[self.token_index]
+        return self.present_token
+#    
+    def parsing(self):
+        value = self.expression()
+        return value
+#making a factor class that is either a integer or a float and if it is one of them then it advances to next token   
+#factor : int or float
+    def factor(self): 
+        tok = self.present_token
+        if tok.type in (TokenType_Int, TokenType_Float):
+            self.advance()
+        return Node(tok)
+        
+#expression in my language is a plus or a minus
+#expression = term + or - term
+    def expression(self):
+        left = self.term()
+        while self.present_token.type in (TokenType_Plus, TokenType_Minus):
+            operator = self.present_token
+            self.advance()
+            right = self.term()
+            left = BinaryOp(left, operator, right)
+        return left
+        
+#term in my language is multiply or divide
+#term = factor * or / factor 
+    def term(self):
+        left = self.factor()
+        while self.present_token.type in (TokenType_Multiply, TokenType_Divide):
+            operator = self.present_token
+            self.advance()
+            right = self.factor()
+            left = BinaryOp(left, operator, right)
+        return left
+        
+
+
+
+
+
 
 def start(text):
     lexer = Lexical(text)
     tokens, error = lexer.make_tokens()
+    if error: return None, error
 
-    return tokens, error
+    p = Parser(tokens)
+    tree = p.parsing()
+
+    return tree, None
