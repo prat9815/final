@@ -19,4 +19,17 @@ For each token there are rules:
 
 Finite Automata is a simplemachine to recognize patterns. It consists of Finite set of states, set of input symbols, initial state, set of final states, transistion function.
 
->
+Production Rules
+
+<Program> --> pratlang <expression> end
+<datatype> --> (int|float)
+<var> -->  [a-zA-Z_]{0,9} // our variable rule
+<expression> --> <term> { (`+`|`-`|`/`) <term> }
+<term> --> <term> { (`*`|`%`) <term> }
+<factor> --> [0-9]+ | <var>  | `(` <expression> `)`
+<bool> --> <expression> (`<=`|`>=` | `<` | `>`) <expression>
+  
+C.) When my program tries to solve an expression it uses a LR grammer 
+D.) If you look at the LR table, if there was ambiguity then there would be red blocks. In my case there is none, so there is no ambiguity.
+
+
